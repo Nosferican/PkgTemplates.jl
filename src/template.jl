@@ -25,6 +25,7 @@ create a template, you can use [`interactive_template`](@ref) instead.
   package will go. Relative paths are converted to absolute ones at template creation time.
 * `julia_version::VersionNumber=$(default_version())`: Minimum allowed Julia version.
 * `ssh::Bool=false`: Whether or not to use SSH for the git remote. If `false` HTTPS will be used.
+* `dev::Bool=true`: Whether or not to `Pkg.develop` generated packages.
 * `manifest::Bool=false`: Whether or not to commit the `Manifest.toml`.
 * `plugins::Vector{<:Plugin}=Plugin[]`: A list of `Plugin`s that the package will include.
 """
