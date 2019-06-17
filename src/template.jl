@@ -36,6 +36,7 @@ struct Template
     dir::String
     julia_version::VersionNumber
     ssh::Bool
+    dev::Bool
     manifest::Bool
     plugins::Dict{DataType, <:Plugin}
 
@@ -47,6 +48,7 @@ struct Template
         dir::AbstractString=Pkg.devdir(),
         julia_version::VersionNumber=default_version(),
         ssh::Bool=false,
+        dev::Bool=true,
         manifest::Bool=false,
         plugins::Vector{<:Plugin}=Plugin[],
         git::Bool=true,
@@ -87,7 +89,7 @@ struct Template
             @warn "Plugin list contained duplicates, only the last of each type was kept"
         end
 
-        new(user, host, license, authors, dir, julia_version, ssh, manifest, plugin_dict)
+        new(user, host, license, authors, dir, julia_version, ssh, dev, manifest, plugin_dict)
     end
 end
 
@@ -109,6 +111,7 @@ function Base.show(io::IO, t::Template)
     println(io, spc, "→ Package directory: ", replace(maybe(t.dir), homedir() => "~"))
     println(io, spc, "→ Minimum Julia version: v", version_floor(t.julia_version))
     println(io, spc, "→ SSH remote: ", t.ssh ? "Yes" : "No")
+    println(io, spc, "→ Add packages to main environment: ", t.dev ? "Yes" : "No")
     println(io, spc, "→ Commit Manifest.toml: ", t.manifest ? "Yes" : "No")
 
     print(io, spc, "→ Plugins:")
@@ -206,6 +209,13 @@ function interactive_template(; git::Bool=true, fast::Bool=false)
     else
         print("Set remote to SSH? [no]: ")
         uppercase(readline()) in ["Y", "YES", "T", "TRUE"]
+    end
+
+    kwargs[:dev] = if fast
+        true
+    else
+        print("Add packages to main environment? [yes]: ")
+        uppercase(readline()) in ["", "Y", "YES", "T", "TRUE"]
     end
 
     kwargs[:manifest] = if fast
